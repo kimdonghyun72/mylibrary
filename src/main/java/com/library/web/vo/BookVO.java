@@ -1,80 +1,78 @@
 package com.library.web.vo;
 
-import java.time.LocalDateTime;
+// import java.time.LocalDateTime; // 이 라인은 이제 필요 없을 수도 있습니다.
+// import org.springframework.format.annotation.DateTimeFormat; // 이 라인도 필요 없을 수도 있습니다.
 
 public class BookVO {
-    private int bookId;
-    private String title;
-    private String author;
-    private String publisher;
-    private LocalDateTime publicationDate; // 출판일
-    private String isbn;
-    private String genre;
-    private String description;
-    private int totalCount;    // 전체 재고 수
-    private int currentCount;  // 현재 대출 가능한 수
-    private LocalDateTime regDate;     // 책 등록일 (신작/추천작 정렬 기준)
-    // private String coverImage; // 책 표지 이미지 경로 (선택 사항, 필요 시 추가)
+    private int seq_no; // bookId -> seq_no
+    private String title_nm; // title -> title_nm
+    private String authr_nm; // author -> authr_nm
+    private String publisher_nm; // publisher -> publisher_nm
+
+    // 데이터베이스 'two_pblicte_de' 컬럼이 YYYY-MM-DD 형식의 문자열이므로 String으로 매핑
+    private String two_pblicte_de; // publicationDate -> two_pblicte_de (String 타입)
+
+    // DB 테이블에 없는 필드는 일단 제외하거나 주석 처리합니다.
+    // private String isbn;
+    // private String genre;
+
+    private String book_intrcn_cn; // description -> book_intrcn_cn
+
+    // DB 테이블에 없는 필드는 일단 제외하거나 주석 처리합니다.
+    // private int totalCount;
+    // private int currentCount;
+    // private LocalDateTime regDate;
+
+    private String cover_image; // coverImage -> cover_image (DB 컬럼명과 일치시키는 것이 좋음)
 
     // 기본 생성자
     public BookVO() {}
 
-    // 모든 필드를 포함하는 생성자 (선택 사항)
-    public BookVO(int bookId, String title, String author, String publisher, LocalDateTime publicationDate,
-                  String isbn, String genre, String description, int totalCount, int currentCount, LocalDateTime regDate) {
-        this.bookId = bookId;
-        this.title = title;
-        this.author = author;
-        this.publisher = publisher;
-        this.publicationDate = publicationDate;
-        this.isbn = isbn;
-        this.genre = genre;
-        this.description = description;
-        this.totalCount = totalCount;
-        this.currentCount = currentCount;
-        this.regDate = regDate;
+    // 필드를 포함하는 생성자 (수정된 필드명으로)
+    public BookVO(int seq_no, String title_nm, String authr_nm, String publisher_nm,
+                  String two_pblicte_de, String book_intrcn_cn, String cover_image) {
+        this.seq_no = seq_no;
+        this.title_nm = title_nm;
+        this.authr_nm = authr_nm;
+        this.publisher_nm = publisher_nm;
+        this.two_pblicte_de = two_pblicte_de;
+        this.book_intrcn_cn = book_intrcn_cn;
+        this.cover_image = cover_image;
     }
 
-    // Getter와 Setter 메서드
-    public int getBookId() { return bookId; }
-    public void setBookId(int bookId) { this.bookId = bookId; }
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
-    public String getAuthor() { return author; }
-    public void setAuthor(String author) { this.author = author; }
-    public String getPublisher() { return publisher; }
-    public void setPublisher(String publisher) { this.publisher = publisher; }
-    public LocalDateTime getPublicationDate() { return publicationDate; }
-    public void setPublicationDate(LocalDateTime publicationDate) { this.publicationDate = publicationDate; }
-    public String getIsbn() { return isbn; }
-    public void setIsbn(String isbn) { this.isbn = isbn; }
-    public String getGenre() { return genre; }
-    public void setGenre(String genre) { this.genre = genre; }
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-    public int getTotalCount() { return totalCount; }
-    public void setTotalCount(int totalCount) { this.totalCount = totalCount; }
-    public int getCurrentCount() { return currentCount; }
-    public void setCurrentCount(int currentCount) { this.currentCount = currentCount; }
-    public LocalDateTime getRegDate() { return regDate; }
-    public void setRegDate(LocalDateTime regDate) { this.regDate = regDate; }
-    // public String getCoverImage() { return coverImage; } // 필요 시 주석 해제
-    // public void setCoverImage(String coverImage) { this.coverImage = coverImage; } // 필요 시 주석 해제
+    // Getter와 Setter 메서드 (수정된 필드명으로)
+    public int getSeq_no() { return seq_no; }
+    public void setSeq_no(int seq_no) { this.seq_no = seq_no; }
 
+    public String getTitle_nm() { return title_nm; }
+    public void setTitle_nm(String title_nm) { this.title_nm = title_nm; }
+
+    public String getAuthr_nm() { return authr_nm; }
+    public void setAuthr_nm(String authr_nm) { this.authr_nm = authr_nm; }
+
+    public String getPublisher_nm() { return publisher_nm; }
+    public void setPublisher_nm(String publisher_nm) { this.publisher_nm = publisher_nm; }
+
+    public String getTwo_pblicte_de() { return two_pblicte_de; }
+    public void setTwo_pblicte_de(String two_pblicte_de) { this.two_pblicte_de = two_pblicte_de; }
+
+    public String getBook_intrcn_cn() { return book_intrcn_cn; }
+    public void setBook_intrcn_cn(String book_intrcn_cn) { this.book_intrcn_cn = book_intrcn_cn; }
+
+    public String getCover_image() { return cover_image; }
+    public void setCover_image(String cover_image) { this.cover_image = cover_image; }
+
+    // toString() 메서드도 수정된 필드명에 맞게 업데이트 해주세요.
     @Override
     public String toString() {
         return "BookVO{" +
-               "bookId=" + bookId +
-               ", title='" + title + '\'' +
-               ", author='" + author + '\'' +
-               ", publisher='" + publisher + '\'' +
-               ", publicationDate=" + publicationDate +
-               ", isbn='" + isbn + '\'' +
-               ", genre='" + genre + '\'' +
-               ", description='" + description + '\'' +
-               ", totalCount=" + totalCount +
-               ", currentCount=" + currentCount +
-               ", regDate=" + regDate +
-               '}';
+                "seq_no=" + seq_no +
+                ", title_nm='" + title_nm + '\'' +
+                ", authr_nm='" + authr_nm + '\'' +
+                ", publisher_nm='" + publisher_nm + '\'' +
+                ", two_pblicte_de='" + two_pblicte_de + '\'' +
+                ", book_intrcn_cn='" + book_intrcn_cn + '\'' +
+                ", cover_image='" + cover_image + '\'' +
+                '}';
     }
 }

@@ -1,16 +1,18 @@
 package com.library.web.dao;
 
 import com.library.web.vo.NoticeVO;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
 public interface NoticeDAO {
-    // 최근 공지사항 N개를 가져오는 메서드
-    List<NoticeVO> getRecentNotices(int limit) throws Exception;
+    // 기존 메서드
+    void insertNotice(NoticeVO noticeVO) throws Exception;
+    NoticeVO getNoticeById(int noticeId) throws Exception;
+    void updateNotice(NoticeVO noticeVO) throws Exception;
+    void deleteNotice(int noticeId) throws Exception;
+    void increaseViewCount(int noticeId) throws Exception; // 조회수 증가
 
-    // TODO: 공지사항 상세 보기, 추가, 수정, 삭제 등 다른 메서드들을 추가할 수 있습니다.
-    // NoticeVO getNoticeById(int noticeId) throws Exception;
-    // void insertNotice(NoticeVO notice) throws Exception;
+    // ⭐⭐ 추가해야 할 메서드 ⭐⭐
+    int getTotalCount() throws Exception; // 전체 공지사항 개수
+    List<NoticeVO> getNoticesByPage(int offset, int limit) throws Exception; // 페이지별 목록 조회
 }

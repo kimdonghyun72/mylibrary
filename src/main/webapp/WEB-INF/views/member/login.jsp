@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -84,7 +85,7 @@
             <p class="error-message">${message}</p>
         </c:if>
 
-        <form action="/mylibrary/member/login" method="post">
+        <form action="${pageContext.request.contextPath}/member/login" method="post">
             <div class="form-group">
                 <label for="memberId">아이디</label>
                 <input type="text" id="memberId" name="memberId" required>
@@ -97,7 +98,7 @@
         </form>
 
         <div class="register-link">
-            계정이 없으신가요? <a href="/mylibrary/member/register">회원가입</a>
+            계정이 없으신가요? <a href="${pageContext.request.contextPath}/member/register">회원가입</a>
         </div>
     </div>
 </body>

@@ -2,16 +2,16 @@ package com.library.web.dao;
 
 import com.library.web.vo.MemberVO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException; // 정확한 예외 임포트
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper; // RowMapper 임포트
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.sql.ResultSet; // ResultSet 임포트
-import java.sql.SQLException; // SQLException 임포트
-import java.sql.Timestamp; // Timestamp 임포트
-import java.util.Date; // Date 임포트
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Date;
 
 @Repository
 public class MemberDAOImpl implements MemberDAO {
@@ -25,10 +25,11 @@ public class MemberDAOImpl implements MemberDAO {
 
     @Override
     public MemberVO getMemberById(String memberId) throws Exception {
-        String sql = "SELECT member_id, password, name, email, phone, address, role, status, regDate FROM member WHERE member_id = ?";
+    	System.out.println("333333");
+        String sql = "SELECT * FROM member WHERE member_id = ?";
         try {
-            // RowMapper 람다식을 사용하여 MemberVO 매핑
-            return jdbcTemplate.queryForObject(sql, new Object[]{memberId}, (rs, rowNum) -> {
+            return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+            	System.out.println("첫번째");
                 MemberVO member = new MemberVO();
                 member.setMemberId(rs.getString("member_id"));
                 member.setPassword(rs.getString("password"));
@@ -38,24 +39,21 @@ public class MemberDAOImpl implements MemberDAO {
                 member.setStatus(rs.getString("status"));
                 member.setPhone(rs.getString("phone"));
 
-                // address 필드는 NULL일 수 있으므로 예외 처리 없이 직접 할당 가능
                 member.setAddress(rs.getString("address"));
 
-                // --- 여기를 수정합니다. (regDate를 Date 타입으로) ---
                 Timestamp regTimestamp = rs.getTimestamp("regDate");
                 if (regTimestamp != null) {
-                    member.setRegDate(new Date(regTimestamp.getTime())); // Timestamp를 Date로 변환하여 할당
+                    member.setRegDate(new Date(regTimestamp.getTime()));
                 } else {
                     member.setRegDate(null);
                 }
-                // --- 수정 끝 ---
                 return member;
-            });
-        } catch (EmptyResultDataAccessException e) { // EmptyResultDataAccessException을 명시적으로 처리
-            return null; // 결과가 없을 경우 null 반환
+            }, memberId);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
         } catch (Exception e) {
             e.printStackTrace();
-            throw e; // 다른 예외는 다시 던짐
+            throw e;
         }
     }
 
@@ -63,12 +61,9 @@ public class MemberDAOImpl implements MemberDAO {
     public MemberVO login(String memberId, String password) throws Exception {
         // 실제 비밀번호 검증 로직이 여기에 추가되어야 합니다.
         // 현재는 ID만으로 회원 정보를 가져옵니다.
-        // 예를 들어:
-        // MemberVO member = getMemberById(memberId);
-        // if (member != null && passwordEncoder.matches(password, member.getPassword())) {
-        //     return member;
-        // }
-        // return null;
+        // MemberServiceImpl에서 비밀번호 비교를 수행하고 있으므로,
+        // DAO에서는 단순히 MemberVO를 ID로 가져오는 getMemberById를 호출하는 것이 일반적입니다.
+        // 비밀번호는 MemberService 계층에서 비교하는 것이 좋습니다.
         return getMemberById(memberId); // 임시 반환
     }
 
@@ -101,10 +96,12 @@ public class MemberDAOImpl implements MemberDAO {
     }
 
     @Override
-    public void registerMember(MemberVO memberVO) throws Exception {
+    public int registerMember(MemberVO memberVO) throws Exception { // <-- 반환 타입을 int로 수정했습니다.
         String sql = "INSERT INTO member (member_id, password, name, email, phone, address, role, status, regDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())";
 
-        jdbcTemplate.update(sql,
+        // jdbcTemplate.update()는 영향을 받은 행의 수를 int로 반환합니다.
+        // 이 값을 그대로 반환하도록 수정했습니다.
+        return jdbcTemplate.update(sql,
                 memberVO.getMemberId(),
                 memberVO.getPassword(),
                 memberVO.getName(),

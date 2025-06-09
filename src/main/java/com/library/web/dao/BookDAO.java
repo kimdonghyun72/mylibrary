@@ -24,4 +24,8 @@ public interface BookDAO {
 
     // 책 삭제 (관리자 기능, 필요하다면)
     void deleteBook(int bookId) throws Exception;
+
+    // --- 이 부분을 추가해야 합니다! ---
+    List<BookVO> searchBooks(String keyword); // throws Exception은 선택 사항입니다.
+    // -------------------------------
 }

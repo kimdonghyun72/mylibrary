@@ -1,518 +1,382 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%-- JSTL Core URI를 http://java.sun.com/jsp/jstl/core 로 통일합니다. --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>마을 도서관 - 내 손안의 도서관</title> <%-- 타이틀도 변경 --%>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <title>마을 도서관</title>
+    <%-- resources/css/style.css 파일 링크 --%>
+    <link rel="stylesheet" href="<c:url value="/resources/css/main.css"/>">
     <style>
-        /* 기본 레이아웃 및 폰트 설정 */
+        /* ==================================== */
+        /* index.jsp 고유의 스타일 시작         */
+        /* ==================================== */
+
         body {
-            font-family: 'Noto Sans KR', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f0f2f5; /* 밝은 회색 배경 */
+            background-color: #f4f7f6;
             color: #333;
-            line-height: 1.6;
+            display: flex; /* Flexbox 추가: 헤더-메인-푸터를 세로로 배치 */
+            flex-direction: column; /* 세로 방향으로 아이템 배치 */
+            min-height: 100vh; /* 뷰포트 높이만큼 최소 높이 설정 (푸터를 하단으로 밀어냄) */
+        }
+
+        /* 메인 배너 스타일 - 높이를 늘려 이미지가 덜 잘리도록 하고 메뉴를 위한 공간 확보 */
+        .main-banner {
+            position: relative;
+            text-align: center;
+            background-image: url('<c:url value="/resources/images/mylib.jpg"/>'); <%-- 이미지 경로 --%>
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 350px; /* 원본 175px에서 대폭 증가 */
             display: flex;
             flex-direction: column;
-            min-height: 100vh; /* 뷰포트 전체 높이를 차지하도록 설정 */
-        }
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        /* 색상 팔레트 */
-        /* 이미지(mylib.jpg)의 책장 색상에서 추출한 계열 */
-        :root {
-            --primary-color: #8B2C3B; /* 깊은 와인색 (책장 색상에서 추출) */
-            --secondary-color: #A03243; /* 좀 더 밝은 와인색 */
-            --dark-background: #4A3C42; /* 어두운 갈색/회색 계열 (책장 그림자색) */
-            --light-text-color: #ffffff;
-            --dark-text-color: #333333;
-            --hover-background: #BD4B5E; /* 호버 시 약간 밝게 */
-            --border-color: #e0e0e0;
-            --light-hover: #faeaea; /* 리스트 호버 등 연한 색상 */
+            justify-content: flex-start; /* ⭐ 변경: 콘텐츠를 상단으로 정렬 */
+            align-items: center; /* 수평 중앙 정렬 유지 */
+            border-radius: 0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            color: white;
+            padding-top: 80px; /* ⭐ 조정: 전체 콘텐츠를 상단에서 80px 떨어뜨립니다. (원하는 높이로 조절) */
+            box-sizing: border-box; /* 패딩 포함 높이 계산 */
         }
 
-
-        /* 헤더 스타일 */
-        header {
-            background-color: var(--primary-color); /* 깊은 와인색 */
-            color: var(--light-text-color);
-            padding: 25px 0;
-            text-align: center;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            position: relative;
-            z-index: 10;
-        }
-        header h1 {
-            margin: 0;
-            font-size: 2.8em;
-            letter-spacing: 1.5px;
-            font-weight: 700; /* 더 굵은 글씨 */
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        .main-banner h2 {
+            font-size: 2.5em; /* 글씨 크기 약간 키움 */
+            margin-top: 0; /* ⭐ 추가: 상단 마진 제거 */
+            margin-bottom: 10px; /* ⭐ 조정: p 태그와의 간격 */
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            z-index: 2;
         }
 
-        /* 메인 배너 이미지 스타일 */
-        .main-banner {
-            width: 100%;
-            overflow: hidden; /* 이미지가 넘치는 것을 방지 */
-            max-height: 300px; /* 최대 높이 설정하여 너무 커지는 것 방지 */
-            display: flex; /* 이미지를 중앙에 배치하기 위함 */
-            justify-content: center;
-            align-items: center;
-            background-color: #e2e6ea; /* 배너 배경색 */
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-        .main-banner img {
-            width: 100%;
-            height: auto;
-            display: block; /* 이미지 하단의 불필요한 여백 제거 */
-            object-fit: cover; /* 이미지가 잘리더라도 영역을 채우도록 */
+        .main-banner p {
+            font-size: 1.4em; /* 글씨 크기 약간 키움 */
+            margin-top: 0; /* ⭐ 추가: 상단 마진 제거 */
+            margin-bottom: 30px; /* ⭐ 조정: 검색창과의 간격 (원하는 만큼 늘림) */
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+            z-index: 2;
+            font-weight: bold; /* ⭐ 추가: 글자 굵게 */
+            color: #FFFF99; /* ⭐ 추가: 글자 색상 밝은 노란색으로 강조 (필요 시 다른 색상으로 변경) */
         }
 
-        /* 내비게이션 바 스타일 */
-        nav {
-            background-color: var(--dark-background); /* 어두운 갈색/회색 */
-            padding: 12px 0;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-            display: flex; /* Flexbox로 메뉴 중앙 정렬 */
-            justify-content: center;
-            flex-wrap: wrap; /* 작은 화면에서 줄바꿈 */
-        }
-        nav a {
-            color: var(--light-text-color);
-            text-decoration: none;
-            padding: 10px 22px; /* 패딩 조정 */
-            font-weight: 500; /* 폰트 굵기 */
-            font-size: 1.05em;
-            transition: background-color 0.3s ease, color 0.3s ease;
-            border-radius: 5px; /* 살짝 둥근 모서리 */
-            margin: 0 10px; /* 메뉴 항목 간 간격 */
-        }
-        nav a:hover {
-            background-color: var(--hover-background); /* 호버 시 약간 밝은 와인색 */
-            color: var(--light-text-color); /* 텍스트 색상도 흰색 유지 */
-            transform: translateY(-2px); /* 살짝 위로 올라가는 효과 */
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        /* 메인 컨테이너 스타일 */
-        .container {
-            flex-grow: 1; /* 푸터를 하단에 고정하기 위해 남은 공간을 채움 */
+        /* 검색창 컨테이너 스타일 - 배너 중앙에 가깝게 조정 */
+        .banner-search-container {
+            /* ⭐ 아래 4가지 속성을 제거하거나 주석 처리합니다. Flexbox 흐름에 따르도록 변경 */
+            /* position: absolute; */
+            /* top: 70%; */
+            /* left: 50%; */
+            /* transform: translateX(-50%); */
+            
             width: 90%;
-            max-width: 1200px;
-            margin: 40px auto; /* 상하 마진 증가 */
-            background-color: white;
-            padding: 35px; /* 패딩 증가 */
-            border-radius: 12px; /* 더 둥근 모서리 */
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); /* 더 깊은 그림자 */
-            display: flex; /* 좌우 분할을 위해 Flexbox 사용 */
-            gap: 30px; /* 섹션 간 간격 */
-            flex-wrap: wrap; /* 작은 화면에서 줄바꿈 */
-        }
-
-        /* 좌우 분할 섹션 스타일 */
-        .left-section, .right-section {
-            flex: 1; /* 남은 공간을 동일하게 배분 */
-            min-width: 300px; /* 최소 너비 설정 (반응형) */
-        }
-
-        .left-section {
-            display: flex;
-            flex-direction: column; /* 공지사항 섹션 내부 요소 세로 정렬 */
-        }
-
-        .right-section {
-            display: flex;
-            flex-direction: column; /* 신작/추천 도서 섹션 내부 요소 세로 정렬 */
-            gap: 30px; /* 신작 도서와 추천 도서 섹션 간 간격 */
-        }
-
-
-        /* 섹션 제목 스타일 */
-        .section-title {
-            font-size: 2.2em; /* 폰트 크기 조정 */
-            color: var(--primary-color); /* 와인색 */
-            text-align: center;
-            margin-top: 0; /* 상단 마진 제거 */
-            margin-bottom: 25px; /* 하단 마진 증가 */
-            padding-bottom: 12px; /* 패딩 조정 */
-            border-bottom: 3px solid #eee;
-            position: relative;
-            font-weight: 700;
-        }
-        .section-title::after {
-            content: '';
-            display: block;
-            width: 70px; /* 밑줄 길이 조정 */
-            height: 4px; /* 밑줄 두께 증가 */
-            background-color: var(--primary-color); /* 와인색 */
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            border-radius: 2px; /* 밑줄 모서리 둥글게 */
-        }
-
-        /* 공지사항 목록 스타일 */
-        .notice-list {
-            list-style: none;
+            max-width: 800px;
+            background-color: #fff;
             padding: 0;
-            margin: 0;
-            border: 1px solid var(--border-color);
-            border-radius: 10px; /* 더 둥근 모서리 */
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); /* 은은한 그림자 */
-            flex-grow: 1; /* 남은 공간 채우기 */
+            border-radius: 5px; /* 모서리를 약간 둥글게 */
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2); /* 그림자 진하게 */
+            display: flex;
+            align-items: center;
+            z-index: 10;
+            overflow: hidden; /* input, button의 border-radius 적용을 위해 */
         }
-        .notice-list li {
-            padding: 16px 22px; /* 패딩 조정 */
-            border-bottom: 1px solid #f0f0f0; /* 더 연한 구분선 */
+        .banner-search-container form {
+            display: flex;
+            width: 100%;
+            border: none;
+            border-radius: 5px; /* 모서리를 약간 둥글게 */
+            overflow: hidden;
+        }
+        .banner-search-container input {
+            flex-grow: 1;
+            border: 1px solid #ccc !important; /* 테두리 추가 */
+            outline: none !important;
+            padding: 10px 15px !important; /* 패딩 늘림 */
+            font-size: 17px; /* 글씨 크기 약간 키움 */
+            border-radius: 5px 0 0 5px !important; /* 왼쪽만 둥글게 */
+            background-color: #ffffff; /* 배경색 변경 */
+            height: 45px !important; /* 높이 늘림 */
+            box-sizing: border-box !important;
+            line-height: normal !important;
+            vertical-align: middle;
+        }
+        .banner-search-container button {
+            background-color: #007bff; /* 파란색 계열로 변경 */
+            color: white;
+            border: 1px solid #007bff !important; /* 테두리 색상 일치 */
+            padding: 10px 20px !important; /* 패딩 늘림 */
+            border-radius: 0 5px 5px 0 !important; /* 오른쪽만 둥글게 */
+            cursor: pointer;
+            font-size: 17px; /* 글씨 크기 약간 키움 */
+            margin-left: -1px !important; /* input과의 미세한 간격 조정 */
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+            height: 45px !important; /* 높이 늘림 */
+            box-sizing: border-box !important;
+            line-height: normal !important;
+            vertical-align: middle;
+            white-space: nowrap;
+            text-align: center;
+        }
+        .banner-search-container button:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+
+        /* 메인 콘텐츠 레이아웃 */
+        .main-layout {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 20px auto; /* 중앙 정렬, 상단 여백 추가 */
+            padding: 20px;
+            flex-grow: 1; /* 남은 공간을 차지하여 푸터를 하단으로 밀어냄 */
+        }
+
+        .left-content, .right-content {
+            flex: 1; /* 동일한 너비로 공간 분할 */
+            display: flex;
+            flex-direction: column;
+            gap: 20px; /* 섹션 간의 간격 */
+        }
+
+        .section-container {
             background-color: #fff;
-            transition: background-color 0.3s ease;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
-        .notice-list li:last-child {
-            border-bottom: none;
-        }
-        .notice-list li:hover {
-            background-color: var(--light-hover); /* 호버 시 연한 핑크/베이지 */
-        }
-        .notice-list li a {
-            text-decoration: none;
-            color: #007bff; /* 파란색 (링크는 표준색 유지) */
-            font-weight: 600; /* 폰트 굵기 */
-            flex-grow: 1;
-            font-size: 1.1em;
-            white-space: nowrap; /* 제목이 길어지면 한 줄로 */
-            overflow: hidden; /* 넘치는 부분 숨김 */
-            text-overflow: ellipsis; /* ...으로 표시 */
-            transition: color 0.3s ease;
-            padding-right: 15px; /* 날짜와의 간격 */
-        }
-        .notice-list li a:hover {
-            color: #0056b3;
-        }
-        .notice-list li span {
-            font-size: 0.9em;
-            color: #888;
-            flex-shrink: 0; /* 날짜가 줄어들지 않도록 */
-        }
-
-        /* 도서 그리드 스타일 */
-        .book-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* 최소 크기 220px로 조정 */
-            gap: 25px; /* 간격 증가 */
-            margin-top: 0; /* 상단 마진 제거 */
-        }
-        .book-item {
-            border: 1px solid var(--border-color); /* 연한 테두리 */
-            border-radius: 12px; /* 더 둥근 모서리 */
-            padding: 20px; /* 패딩 조정 */
-            text-align: center;
-            background-color: #fefefe;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); /* 더 은은한 그림자 */
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .book-item:hover {
-            transform: translateY(-7px); /* 더 크게 올라감 */
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18); /* 더 강조된 그림자 */
-        }
-        .book-item img {
-            max-width: 100%;
-            height: 180px; /* 고정 높이 조정 */
-            object-fit: contain;
-            border-radius: 8px; /* 이미지 모서리 둥글게 */
-            margin-bottom: 15px;
-            border: 1px solid #f0f0f0;
-            background-color: #fff; /* 이미지가 투명할 경우를 대비 */
-        }
-        .book-item h4 {
+        .section-container h3 {
+            font-size: 1.5em;
+            color: #2c3e50;
             margin-top: 0;
-            margin-bottom: 8px;
-            color: var(--dark-text-color);
-            font-size: 1.25em; /* 폰트 크기 조정 */
-            font-weight: 600;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
         }
-        .book-item p {
-            margin: 4px 0;
-            color: #666;
-            font-size: 0.9em; /* 폰트 크기 조정 */
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        .section-container ul {
+            list-style: none;
+            padding: 0;
         }
-        .book-item .book-author, .book-item .book-publisher {
-            margin-top: 6px;
-            color: #777;
-        }
-        .book-item a.detail-button { /* 상세 보기 버튼 스타일 */
-            display: inline-block;
-            margin-top: 15px; /* 마진 조정 */
-            padding: 9px 18px; /* 패딩 조정 */
-            background-color: var(--secondary-color); /* 좀 더 밝은 와인색 */
-            color: var(--light-text-color);
-            text-decoration: none;
-            border-radius: 7px;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            font-weight: 600;
-            font-size: 0.95em; /* 폰트 크기 조정 */
-        }
-        .book-item a.detail-button:hover {
-            background-color: var(--primary-color); /* 호버 시 기본 와인색 */
-            transform: translateY(-2px);
-        }
-
-        /* 메시지 스타일 */
-        .message, .error-message {
-            padding: 18px; /* 패딩 증가 */
-            margin-bottom: 25px; /* 마진 증가 */
-            border-radius: 10px; /* 더 둥근 모서리 */
-            text-align: center;
-            font-weight: 600;
-            font-size: 1.15em;
-            animation: fadeIn 0.8s ease-out; /* 페이드인 애니메이션 */
-        }
-        .message {
-            background-color: #d4edda; /* 밝은 초록색 */
-            color: #155724; /* 진한 초록색 */
-            border: 1px solid #c3e6cb;
-        }
-        .error-message {
-            background-color: #f8d7da; /* 밝은 빨간색 */
-            color: #721c24; /* 진한 빨간색 */
-            border: 1px solid #f5c6cb;
-        }
-        .no-data-message {
-            text-align: center;
-            color: #888;
-            font-style: italic;
-            margin-top: 20px; /* 마진 조정 */
-            padding: 15px; /* 패딩 조정 */
-            background-color: #fcfcfc;
-            border-radius: 10px;
-            border: 1px dashed #d0d0d0;
-            font-size: 1em; /* 폰트 크기 조정 */
-        }
-
-        /* 푸터 스타일 */
-        footer {
-            background-color: var(--dark-background); /* 어두운 갈색/회색 */
-            color: #adb5bd; /* 밝은 회색 글씨 */
-            text-align: center;
-            padding: 25px; /* 패딩 증가 */
-            margin-top: auto; /* 컨테이너 하단에 고정 */
-            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.2);
+        .section-container li {
+            padding: 8px 0;
+            border-bottom: 1px dashed #eee;
             font-size: 0.95em;
         }
-        footer p {
-            margin: 5px 0;
+        .section-container li:last-child {
+            border-bottom: none;
+        }
+        .section-container a {
+            text-decoration: none;
+            color: #444;
+            font-weight: 500;
+            display: block;
+        }
+        .section-container a:hover {
+            color: #3498db;
         }
 
-        /* 애니메이션 */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* 추천 도서 영역 스타일 */
+        .recommended-books {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap; /* 작은 화면에서 줄바꿈 */
+            margin-top: 20px;
+        }
+        .recommended-item {
+            width: 160px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #fff;
+            padding-bottom: 10px;
+            transition: transform 0.2s ease-in-out;
+        }
+        .recommended-item:hover {
+            transform: translateY(-5px);
+        }
+        .recommended-item img {
+            width: 100%;
+            height: 220px; /* 이미지 높이 고정 */
+            object-fit: cover; /* 이미지가 잘리지 않고 채워지도록 */
+            border-bottom: 1px solid #eee;
+            margin-bottom: 8px;
+        }
+        .recommended-item p {
+            margin: 3px 8px;
+            font-size: 0.85em;
+            color: #555;
+            word-break: keep-all; /* 단어가 잘리지 않도록 */
+        }
+        .recommended-item p:first-of-type {
+            font-weight: bold;
+            color: #333;
+            font-size: 0.95em;
+        }
+        .recommended-item.placeholder-item img {
+            opacity: 0.7; /* 준비중 이미지 흐리게 */
         }
 
         /* 반응형 디자인 */
-        @media (max-width: 992px) {
-            .container {
-                flex-direction: column; /* 태블릿에서는 세로로 쌓이도록 */
-                gap: 40px; /* 섹션 간 간격 증가 */
-            }
-            .left-section, .right-section {
-                min-width: unset; /* 최소 너비 제한 해제 */
-                width: 100%; /* 전체 너비 차지 */
-            }
-            .book-grid {
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                gap: 20px;
-            }
-            .book-item img {
-                height: 160px;
-            }
-        }
-
         @media (max-width: 768px) {
-            header h1 {
-                font-size: 2.2em;
+            .main-layout {
+                flex-direction: column;
+                padding: 10px;
             }
-            nav a {
-                padding: 8px 15px;
-                font-size: 1em;
-                margin: 5px;
+            .left-content, .right-content {
+                width: 100%;
             }
             .main-banner {
-                max-height: 200px; /* 배너 높이 줄이기 */
+                height: 300px;
+                padding-top: 60px; /* ⭐ 모바일에서도 패딩 조절 */
             }
-            .section-title {
+            .main-banner h2 {
                 font-size: 2em;
-                margin-bottom: 20px;
             }
-            .section-title::after {
-                width: 60px;
-                height: 3px;
-            }
-            .notice-list li {
-                flex-direction: column; /* 공지사항 항목 세로 정렬 */
-                align-items: flex-start;
-                padding: 15px 20px;
-            }
-            .notice-list li span {
-                margin-top: 5px;
-                margin-left: 0;
-            }
-            .book-grid {
-                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-                gap: 15px;
-            }
-            .book-item {
-                padding: 15px;
-            }
-            .book-item img {
-                height: 140px;
-            }
-            .book-item h4 {
+            .main-banner p {
                 font-size: 1.1em;
             }
-            .book-item p {
-                font-size: 0.85em;
-            }
-            .message, .error-message, .no-data-message {
-                font-size: 1em;
-                padding: 15px;
-            }
-        }
-
-        @media (max-width: 576px) {
-            nav {
-                flex-direction: column;
-                align-items: center;
-            }
-            nav a {
+            .banner-search-container {
+                /* top: 70%; ⭐ 모바일에서도 이 속성 제거 */
                 width: 90%;
-                text-align: center;
-                margin-bottom: 8px;
+                max-width: 350px;
             }
-            .book-grid {
-                grid-template-columns: 1fr; /* 한 줄에 하나씩 */
-            }
-            .book-item img {
-                height: 180px; /* 다시 높이 키움 */
+            .banner-search-container input,
+            .banner-search-container button {
+                font-size: 15px;
+                height: 40px !important;
             }
         }
+        /* ==================================== */
+        /* index.jsp 고유의 스타일 끝           */
+        /* ==================================== */
     </style>
 </head>
 <body>
-    <header>
-        <h1>마을 도서관</h1> <%-- MyLibrary -> 마을 도서관으로 변경 --%>
-    </header>
+    <%-- 상단 메뉴 포함 (header.jsp는 보통 <body> 안에 포함됩니다. 배너 아래에 위치) --%>
+    <%-- 경로: /mylibrary/src/main/webapp/WEB-INF/views/includes/header.jsp --%>
+    <%@ include file="/WEB-INF/views/includes/header.jsp" %>
 
+    <%-- 메인 배너 및 검색창 --%>
     <div class="main-banner">
-        <img src="/mylibrary/resources/images/mylib.jpg" alt="마을 도서관 메인 배너">
+        <h2>책과 함께하는 새로운 세상</h2>
+        <p>마을 도서관에서 지식과 영감을 발견하세요.</p>
+        <div class="banner-search-container">
+            <form action="<c:url value="/book/search"/>" method="get">
+                <input type="text" name="keyword" placeholder="도서 제목, 저자 검색?">
+                <button type="submit">검색</button>
+            </form>
+        </div>
     </div>
 
-    <nav>
-        <a href="/mylibrary/">홈</a>
-        <a href="/mylibrary/member/login">로그인</a>
-        <a href="/mylibrary/member/join">회원가입</a>
-        <a href="/mylibrary/member/mypage">마이 페이지</a>
-        <c:if test="${sessionScope.loggedInMember != null}">
-            <a href="/mylibrary/member/logout">로그아웃</a> <%-- 여기 오타 수정: 로그fs아웃 -> 로그아웃 --%>
-        </c:if>
-        <%-- TODO: 필요한 경우 여기에 추가 메뉴 항목을 더 넣을 수 있습니다. --%>
-    </nav>
-
-    <div class="container">
-        <c:if test="${not empty message}">
-            <p class="message">${message}</p>
-        </c:if>
-        <c:if test="${not empty errorMessage}">
-            <p class="error-message">${errorMessage}</p>
+    <main class="main-layout">
+        <%-- 팝업 공지사항 (기존 위치 유지, CSS만 조정) --%>
+        <c:if test="${not empty popupNotice}">
+            <div id="popupNotice" style="display:block; position:fixed; top:20%; left:50%; transform:translate(-50%, -20%); background:white; padding:20px; border:1px solid #ccc; box-shadow:0 0 10px rgba(0,0,0,0.5); z-index:1000;">
+                <h3>${popupNotice.title}</h3>
+                <div>${popupNotice.content}</div>
+                <button onclick="document.getElementById('popupNotice').style.display='none'">닫기</button>
+            </div>
         </c:if>
 
-        <div class="left-section">
-            <h2 class="section-title">공지사항</h2>
-            <c:choose>
-                <c:when test="${not empty recentNotices}">
-                    <ul class="notice-list">
-                        <c:forEach var="notice" items="${recentNotices}">
-                            <li>
-                                <%-- TODO: 공지사항 상세 페이지 링크가 있다면 활성화 (예: /mylibrary/notice/detail?id=${notice.id}) --%>
-                                <a href="#">${notice.title}</a>
-                                <span><fmt:formatDate value="${notice.regDate}" pattern="yyyy-MM-dd"/></span>
-                            </li>
-                        </c:forEach>
-                    </ul>
-                </c:when>
-                <c:otherwise>
-                    <p class="no-data-message">등록된 공지사항이 없습니다.</p>
-                </c:otherwise>
-            </c:choose>
+        <%-- 왼쪽 섹션 (공지사항, Q&A) --%>
+        <div class="left-content">
+            <%-- 최근 공지사항 섹션 --%>
+            <div class="section-container recent-notices">
+                <h3>최근 공지사항</h3>
+                <ul>
+                    <c:choose>
+                        <c:when test="${not empty recentNotices}">
+                            <c:forEach var="notice" items="${recentNotices}" varStatus="status" begin="0" end="4">
+                                <li><a href="<c:url value="/notice/detail?num=${notice.noticeId}"/>">${notice.title}</a></li>
+                            </c:forEach>
+                        </c:when>
+                        <c:otherwise>
+                            <li>공지사항이 없습니다.</li>
+                        </c:otherwise>
+                    </c:choose>
+                </ul>
+            </div>
+
+            <%-- Q&A 섹션 --%>
+            <div class="section-container q-a">
+                <h3>Q&A</h3>
+                <ul>
+                    <c:choose>
+                        <c:when test="${not empty recentQnAs}">
+                            <c:forEach var="qa" items="${recentQnAs}" varStatus="status" begin="0" end="4">
+                                <%-- ⭐ qa.questionTitle -> qa.qaTitle 수정 ⭐ --%>
+                                <li><a href="<c:url value="/qa/detail?num=${qa.qaId}"/>">${qa.qaTitle}</a></li>
+                            </c:forEach>
+                        </c:when>
+                        <c:otherwise>
+                            <li>Q&A가 없습니다.</li>
+                        </c:otherwise>
+                    </c:choose>
+                </ul>
+            </div>
         </div>
 
-        <div class="right-section">
-            <h2 class="section-title">신작 도서</h2>
-            <c:choose>
-                <c:when test="${not empty newBooks}">
-                    <div class="book-grid">
-                        <c:forEach var="book" items="${newBooks}">
-                            <div class="book-item">
-                                <%-- TODO: 이미지 경로와 BookVO 필드에 'coverImage'가 있다면 주석 해제하여 사용 --%>
-                                <img src="https://via.placeholder.com/180x220?text=Book+Cover" alt="기본 책 표지">
-                                <h4>${book.title}</h4>
-                                <p class="book-author">저자: ${book.author}</p>
-                                <p class="book-publisher">출판사: ${book.publisher}</p>
-                                <%-- TODO: 도서 상세 페이지 링크 추가 시 주석 해제 및 올바른 경로 설정 --%>
-                                <a href="#" class="detail-button">상세 보기</a>
-                            </div>
-                        </c:forEach>
-                    </div>
-                </c:when>
-                <c:otherwise>
-                    <p class="no-data-message">새로운 도서가 없습니다.</p>
-                </c:otherwise>
-            </c:choose>
-
-            <h2 class="section-title">추천 도서</h2>
-            <c:choose>
-                <c:when test="${not empty recommendedBooks}">
-                <div class="book-grid">
-                    <c:forEach var="book" items="${recommendedBooks}">
-                        <div class="book-item">
-                            <%-- TODO: 이미지 경로와 BookVO 필드에 'coverImage'가 있다면 주석 해제하여 사용 --%>
-                            <img src="https://via.placeholder.com/180x220?text=Book+Cover" alt="기본 책 표지">
-                            <h4>${book.title}</h4>
-                            <p class="book-author">저자: ${book.author}</p>
-                            <p class="book-publisher">출판사: ${book.publisher}</p>
-                            <%-- TODO: 도서 상세 페이지 링크 추가 시 주석 해제 및 올바른 경로 설정 --%>
-                            <a href="#" class="detail-button">상세 보기</a>
+        <%-- 오른쪽 섹션 (추천 도서, 신작 도서) --%>
+        <div class="right-content">
+            <%-- 이번 달 추천 도서 섹션 --%>
+            <div class="section-container recommended-books-section">
+                <h3>이번 달 추천 도서</h3>
+                <div class="recommended-books">
+                    <c:forEach var="book" items="${recommendedBooks}" varStatus="status" begin="0" end="3">
+                        <div class="recommended-item">
+                            <%-- 이미지 경로를 실제 존재하는 이미지로 확인 또는 기본 이미지 사용 --%>
+                            <img src="<c:url value="/resources/images/recommended_book_0${status.index + 1}.jpg"/>"
+                                 alt="${book.title_nm}" class="book-cover">
+                            <p>${book.title_nm}</p>
+                            <p>${book.authr_nm}</p>
                         </div>
                     </c:forEach>
+                    <c:if test="${empty recommendedBooks || fn:length(recommendedBooks) < 4}"> <%-- size() 대신 fn:length() 사용 --%>
+                        <c:set var="numMissing" value="${4 - fn:length(recommendedBooks)}" /> <%-- size() 대신 fn:length() 사용 --%>
+                        <c:forEach begin="1" end="${numMissing}">
+                            <div class="recommended-item placeholder-item">
+                                <%-- 기본 이미지 경로 확인 (필요 시 직접 파일 추가). 이 파일이 없다면 'default_book_cover.jpg' 파일을 /resources/images/ 에 추가해야 합니다. --%>
+                                <img src="<c:url value="/resources/images/default_book_cover.jpg"/>" alt="준비중" class="book-cover">
+                                <p>추천 도서 준비중</p>
+                                <p></p>
+                            </div>
+                        </c:forEach>
+                    </c:if>
                 </div>
-            </c:when>
-            <c:otherwise>
-                <p class="no-data-message">추천 도서가 없습니다.</p>
-            </c:otherwise>
-        </c:choose>
-        </div>
-    </div>
+            </div>
 
-    <footer>
-        <p>&copy; 2025 마을 도서관. All rights reserved.</p> <%-- 푸터 텍스트도 변경 --%>
-    </footer>
+            <%-- 신작 도서 섹션 --%>
+            <div class="section-container new-books-section">
+                <h3>신작 도서</h3>
+                <ul>
+                    <c:choose>
+                        <c:when test="${not empty newBooks}">
+                            <c:forEach var="book" items="${newBooks}" varStatus="status" begin="0" end="5">
+                                <li><a href="<c:url value="/book/detail?seqNo=${book.seq_no}"/>">${book.title_nm} - ${book.authr_nm}</a></li>
+                            </c:forEach>
+                        </c:when>
+                        <c:otherwise>
+                            <li>신작 도서가 없습니다.</li>
+                        </c:otherwise>
+                    </c:choose>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <%-- 푸터 포함 --%>
+    <%-- 경로: /mylibrary/src/main/webapp/WEB-INF/views/includes/footer.jsp --%>
+    <%@ include file="/WEB-INF/views/includes/footer.jsp" %>
+
+    <script>
+        // 필요 시 팝업 닫기 등의 스크립트 추가
+    </script>
 </body>
 </html>

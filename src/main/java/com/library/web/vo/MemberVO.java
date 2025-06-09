@@ -1,23 +1,21 @@
 package com.library.web.vo;
 
-import java.util.Date; // Date 클래스를 사용합니다.
+import java.util.Date;
 
 public class MemberVO {
-    private String memberId;
+    private String memberId;  // camelCase로 변경
     private String password;
     private String name;
     private String email;
     private String role;
-    private Date regDate; // 타입을 LocalDateTime에서 Date로 변경
+    private Date regDate;
     private String status;
     private String phone;
     private String address;
 
-    // 1. 기본 생성자
     public MemberVO() {
     }
 
-    // 2. 모든 필드를 매개변수로 받는 생성자
     public MemberVO(String memberId, String password, String name, String email, String role,
                     Date regDate, String status, String phone, String address) {
         this.memberId = memberId;
@@ -31,8 +29,6 @@ public class MemberVO {
         this.address = address;
     }
 
-    // --- Getter와 Setter 메서드 시작 ---
-
     public String getMemberId() {
         return memberId;
     }
@@ -41,11 +37,11 @@ public class MemberVO {
         this.memberId = memberId;
     }
 
-    public String getPassword() { // password 필드의 Getter
+    public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) { // password 필드의 Setter
+    public void setPassword(String password) {
         this.password = password;
     }
 
@@ -73,11 +69,11 @@ public class MemberVO {
         this.role = role;
     }
 
-    public Date getRegDate() { // regDate 필드의 Getter
+    public Date getRegDate() {
         return regDate;
     }
 
-    public void setRegDate(Date regDate) { // regDate 필드의 Setter
+    public void setRegDate(Date regDate) {
         this.regDate = regDate;
     }
 
@@ -105,9 +101,6 @@ public class MemberVO {
         this.address = address;
     }
 
-    // --- Getter와 Setter 메서드 끝 ---
-
-    // toString() 메서드
     @Override
     public String toString() {
         return "MemberVO{" +

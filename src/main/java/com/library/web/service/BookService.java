@@ -11,4 +11,8 @@ public interface BookService {
     void insertBook(BookVO book) throws Exception;
     void updateBook(BookVO book) throws Exception;
     void deleteBook(int bookId) throws Exception;
+
+    // --- 이 부분을 추가해야 합니다! ---
+    List<BookVO> searchBooksByKeyword(String keyword); // throws Exception은 선택 사항입니다.
+    // -------------------------------
 }

@@ -14,7 +14,7 @@ public class MvcConfig implements WebMvcConfigurer {
         DateTimeFormatterRegistrar registrar = new DateTimeFormatterRegistrar();
         // ISO 형식 사용 여부. 필요에 따라 true로 설정할 수 있습니다.
         // false로 두면 pattern="yyyy-MM-dd HH:mm" 같은 명시적 패턴을 따릅니다.
-        registrar.setUseIsoDates(false); 
+        
         registrar.registerFormatters(registry);
     }
 }
